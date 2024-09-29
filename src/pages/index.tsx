@@ -1,17 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button"; // Import components from Shadcn
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const OptionsPricingModel = () => {
-  const [stockPrice, setStockPrice] = useState(0);
-  const [strikePrice, setStrikePrice] = useState(0);
-  const [timeToMaturity, setTimeToMaturity] = useState(0);
-  const [riskFreeRate, setRiskFreeRate] = useState(0); // Store raw percentage
-  const [volatility, setVolatility] = useState(0); // Store raw percentage
+  const [stockPrice, setStockPrice] = useState(100); // Default value of 100
+  const [strikePrice, setStrikePrice] = useState(100); // Default value of 100
+  const [timeToMaturity, setTimeToMaturity] = useState(1); // Default 1 year
+  const [riskFreeRate, setRiskFreeRate] = useState(5); // Default 5%
+  const [volatility, setVolatility] = useState(20); // Default 20%
   const [callPrice, setCallPrice] = useState(0);
   const [putPrice, setPutPrice] = useState(0);
+
+  // Auto-calculate option price whenever any of the inputs change
+  useEffect(() => {
+    if (
+      stockPrice &&
+      strikePrice &&
+      timeToMaturity &&
+      riskFreeRate &&
+      volatility
+    ) {
+      calculateOptionPrice();
+    }
+  }, [stockPrice, strikePrice, timeToMaturity, riskFreeRate, volatility]);
 
   const calculateOptionPrice = () => {
     const riskFreeRateDecimal = riskFreeRate / 100;
@@ -59,10 +81,12 @@ const OptionsPricingModel = () => {
   };
 
   return (
-    <div className="max-w-full mx-auto ">
+    <div className="max-w-full mx-auto">
       <header className="bg-gray-100 dark:bg-gray-800 p-6 rounded-md">
-        <h1 className="text-xl font-bold text-center dark:text-white">Options Pricing Model</h1>
-        <ModeToggle />
+        <h1 className="text-xl font-bold text-center dark:text-white">
+          Options Pricing Model
+          <ModeToggle />
+        </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
           <div>
             <Label className="dark:text-gray-300">Stock Price</Label>
@@ -85,7 +109,9 @@ const OptionsPricingModel = () => {
             />
           </div>
           <div>
-            <Label className="dark:text-gray-300">Time to Maturity (years)</Label>
+            <Label className="dark:text-gray-300">
+              Time to Maturity (years)
+            </Label>
             <Input
               type="number"
               value={timeToMaturity}
@@ -115,21 +141,42 @@ const OptionsPricingModel = () => {
             />
           </div>
         </div>
-        <div className="flex justify-center mt-6">
-          <Button onClick={calculateOptionPrice} className="w-full md:w-auto">
-            Calculate
-          </Button>
-        </div>
       </header>
 
-      <div className="flex flex-col justify-center items-center mt-8">
-        <h2 className="text-2xl font-bold mb-4 dark:text-white">Option Prices</h2>
-        <div className="flex space-x-4">
-          <div className="bg-green-500 dark:bg-green-700 text-white font-bold p-4 rounded-md">
-            Call Price: {callPrice.toFixed(2)}
+      <div className="flex flex-col justify-center items-center mt-8 p-6">
+        <Table className="mb-6">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="">Stock Price</TableHead>
+              <TableHead>Strike Price</TableHead>
+              <TableHead>Time to Maturity(Years)</TableHead>
+              <TableHead className="">Risk-Free Rate</TableHead>
+              <TableHead className="">Volatility</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell className="font-medium">{stockPrice}</TableCell>
+              <TableCell>{strikePrice}</TableCell>
+              <TableCell>{timeToMaturity}</TableCell>
+              <TableCell>{riskFreeRate}</TableCell>
+              <TableCell>{volatility}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
+        <div className="flex space-x-4 text-center ">
+          <div className="bg-green-500 dark:bg-green-700 text-white font-bold p-4 rounded-md w-52">
+            Call Price: 
+            <div>
+            ${callPrice.toFixed(2)}
+            </div>
           </div>
-          <div className="bg-red-500 dark:bg-red-700 text-white font-bold p-4 rounded-md">
-            Put Price: {putPrice.toFixed(2)}
+          <div className="bg-red-500 dark:bg-red-700 text-white font-bold p-4 rounded-md w-52">
+            Put Price: 
+            <div>
+              ${putPrice.toFixed(2)}
+            </div>
           </div>
         </div>
       </div>
