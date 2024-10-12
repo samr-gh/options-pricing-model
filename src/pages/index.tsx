@@ -12,8 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Rows } from "lucide-react";
+import { time } from "console";
 
 const OptionsPricingModel = () => {
+  const [entryNumber, setEntryNumber] = useState(1);
   const [stockPrice, setStockPrice] = useState(100); // Default value of 100
   const [strikePrice, setStrikePrice] = useState(100); // Default value of 100
   const [timeToMaturity, setTimeToMaturity] = useState(1); // Default 1 year
@@ -21,6 +24,20 @@ const OptionsPricingModel = () => {
   const [volatility, setVolatility] = useState(20); // Default 20%
   const [callPrice, setCallPrice] = useState(0);
   const [putPrice, setPutPrice] = useState(0);
+
+  type TableRow = {
+      entryNumber: number,
+      stockPrice: number,
+      strikePrice: number,
+      timeToMaturity: number,
+      riskFreeRate: number,
+      volatility: number,
+      callPrice: number,
+      putPrice: number,
+    } 
+  
+  // initialize history
+  const [inputValues, setInputValues] = useState<TableRow[]>([]);
 
   // Auto-calculate option price whenever any of the inputs change
   useEffect(() => {
@@ -30,9 +47,7 @@ const OptionsPricingModel = () => {
       timeToMaturity &&
       riskFreeRate &&
       volatility
-    ) {
-      calculateOptionPrice();
-    }
+    ) calculateOptionPrice()
   }, [stockPrice, strikePrice, timeToMaturity, riskFreeRate, volatility]);
 
   const calculateOptionPrice = () => {
@@ -80,12 +95,30 @@ const OptionsPricingModel = () => {
     return sign * y;
   };
 
+  // late initialize most recent entry
+  const createNewEntry = () => {
+    useEffect
+    // Move current top row down and append
+    const newRow:TableRow = {
+      entryNumber: entryNumber, stockPrice: stockPrice, strikePrice: strikePrice, 
+      timeToMaturity: timeToMaturity, riskFreeRate: riskFreeRate, 
+      volatility: volatility, callPrice: callPrice, putPrice: putPrice,
+    }
+    // update table
+    setEntryNumber(entryNumber + 1)
+    setInputValues([newRow, ...inputValues])
+  }
+
   return (
     <div className="max-w-full mx-auto">
       <header className="bg-gray-100 dark:bg-gray-800 p-6 rounded-md">
-        <h1 className="text-xl font-bold text-center dark:text-white">
+        <h1 className="text-xl font-bold flex dark:text-white">
+          <div style={{textAlign: "center", flexGrow: "1"}}>
           Options Pricing Model
+          </div>
+          <div style={{justifyContent: "right"}}>
           <ModeToggle />
+          </div>
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-4">
           <div>
@@ -141,29 +174,14 @@ const OptionsPricingModel = () => {
             />
           </div>
         </div>
+        <br></br>
+        <div className="flex justify-center">
+          <Button
+          onClick={createNewEntry}>Record</Button>
+        </div>
       </header>
 
-      <div className="flex flex-col justify-center items-center mt-8 p-6">
-        <Table className="mb-6">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="">Stock Price</TableHead>
-              <TableHead>Strike Price</TableHead>
-              <TableHead>Time to Maturity(Years)</TableHead>
-              <TableHead className="">Risk-Free Rate</TableHead>
-              <TableHead className="">Volatility</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">{stockPrice}</TableCell>
-              <TableCell>{strikePrice}</TableCell>
-              <TableCell>{timeToMaturity}</TableCell>
-              <TableCell>{riskFreeRate}</TableCell>
-              <TableCell>{volatility}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+      <div className="flex flex-col justify-center items-center p-12">
 
         <div className="flex space-x-4 text-center ">
           <div className="bg-green-500 dark:bg-green-700 text-white font-bold p-4 rounded-md w-52">
@@ -179,6 +197,53 @@ const OptionsPricingModel = () => {
             </div>
           </div>
         </div>
+
+        <br></br>
+
+        
+          <div className="text-xl font-bold flex" style={{textAlign: "right"}}>History</div>
+          <Table className="mb-10">
+            <TableHeader>
+              <TableRow>
+                <TableHead># Entry</TableHead>
+                <TableHead className="">Stock Price</TableHead>
+                <TableHead>Strike Price</TableHead>
+                <TableHead>Time to Maturity(Years)</TableHead>
+                <TableHead className="">Risk-Free Rate</TableHead>
+                <TableHead className="">Volatility</TableHead>
+                <TableHead className="font-bold">Call Price</TableHead>
+                <TableHead className="font-bold">Put Price</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {/* Map old rows */}
+                <TableRow>
+                <TableCell>{entryNumber}</TableCell>
+                <TableCell className="font-medium">{stockPrice}</TableCell>
+                <TableCell>{strikePrice}</TableCell>
+                <TableCell>{timeToMaturity}</TableCell>
+                <TableCell>{riskFreeRate}</TableCell>
+                <TableCell>{volatility}</TableCell>
+                <TableCell>{callPrice.toFixed(2)}</TableCell>
+                <TableCell>{putPrice.toFixed(2)}</TableCell>
+              </TableRow>             
+              {
+                inputValues.map((row, _) => (
+                  <TableRow>
+                    <TableCell>{row.entryNumber}</TableCell>
+                    <TableCell>{row.stockPrice}</TableCell>
+                    <TableCell>{row.strikePrice}</TableCell>
+                    <TableCell>{row.timeToMaturity}</TableCell>
+                    <TableCell>{row.riskFreeRate}</TableCell>
+                    <TableCell>{row.volatility}</TableCell>
+                    <TableCell>{row.callPrice.toFixed(2)}</TableCell>
+                    <TableCell>{row.putPrice.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              
+            </TableBody>
+          </Table>
+        
       </div>
     </div>
   );
