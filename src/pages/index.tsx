@@ -201,7 +201,7 @@ const OptionsPricingModel = () => {
         <br></br>
 
         
-          <div className="text-xl font-bold flex" style={{textAlign: "right"}}>History</div>
+          
           <Table className="mb-10">
             <TableHeader>
               <TableRow>
@@ -226,7 +226,13 @@ const OptionsPricingModel = () => {
                 <TableCell>{volatility}</TableCell>
                 <TableCell>{callPrice.toFixed(2)}</TableCell>
                 <TableCell>{putPrice.toFixed(2)}</TableCell>
-              </TableRow>             
+              </TableRow>
+            </TableBody>
+            </Table>
+              <div className="text-xl font-bold flex" style={{alignItems: 'center', flexGrow: '1'}}>History</div>
+              <br></br>
+            <Table>
+            <TableBody>
               {
                 inputValues.map((row, _) => (
                   <TableRow>
