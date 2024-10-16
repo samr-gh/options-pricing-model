@@ -227,12 +227,9 @@ const OptionsPricingModel = () => {
                 <TableCell>{callPrice.toFixed(2)}</TableCell>
                 <TableCell>{putPrice.toFixed(2)}</TableCell>
               </TableRow>
-            </TableBody>
-            </Table>
+              <br></br>
               <div className="text-xl font-bold flex" style={{alignItems: 'center', flexGrow: '1'}}>History</div>
               <br></br>
-            <Table>
-            <TableBody>
               {
                 inputValues.map((row, _) => (
                   <TableRow>
